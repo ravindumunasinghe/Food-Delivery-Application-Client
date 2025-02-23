@@ -40,7 +40,7 @@ pipeline {
                 sh '''
                     node --version
                     npm --version
-                    test -f build/index.html
+                    test -f dist/index.html
                     npm test
                 '''
             }
