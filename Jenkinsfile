@@ -19,11 +19,9 @@ pipeline {
                    npm --version
                    npm ci
                    npm run build
-                   ls -la
-                   
+                   ls -la     
 
                 '''
-             
             }
         }
 
@@ -49,4 +47,10 @@ pipeline {
 
 
     }
+
+     post {
+            always {
+                junit 'test-results/junit.xml'
+            }
+     }
 }
