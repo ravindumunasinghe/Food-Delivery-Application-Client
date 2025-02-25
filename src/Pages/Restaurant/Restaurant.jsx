@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Clock, Phone, MapPin, Mail, Plus, Edit, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Restaurant = () => {
+  const navigate = useNavigate();
+
   const initialRestaurants = [
     {
       id: 1,
@@ -194,6 +197,12 @@ const Restaurant = () => {
                   >
                     <Trash2 size={18} />
                   </button>
+                  <button
+                onClick={() => navigate(`/restaurant/${restaurants.id}/menu`)}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+              >
+                M
+              </button>
                 </div>
               </div>
               
@@ -337,12 +346,14 @@ const Restaurant = () => {
                   >
                     Cancel
                   </button>
+                 
                   <button
                     type="submit"
                     className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                   >
                     {editingId ? 'Update Restaurant' : 'Add Restaurant'}
                   </button>
+                  
                 </div>
               </form>
             </div>

@@ -5,6 +5,7 @@ import Restaurant from "../Pages/Restaurant/Restaurant";
 
 
 import NoUrl from "../Pages/NoUrl/NoUrl"; // Ensure this import is correct
+import MenuManagement from "../Pages/Menu/Menu"
 
 
 const router1 = createBrowserRouter([
@@ -20,6 +21,9 @@ const router1 = createBrowserRouter([
       {
         path: "restaurant",
         element: <Restaurant />,
+      },{
+        path: "restaurant/:restaurantId/menu",
+        element: <MenuManagement />,
       },
       {
         path: "*",
