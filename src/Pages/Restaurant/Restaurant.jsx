@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { Clock, Phone, MapPin, Mail, Plus, X, Edit, Trash2 } from 'lucide-react';
+import { Clock, Phone, MapPin, Mail, Plus, Edit, Trash2 } from 'lucide-react';
 
-const RestaurantManagement = () => {
+const Restaurant = () => {
   const initialRestaurants = [
     {
       id: 1,
@@ -42,11 +41,10 @@ const RestaurantManagement = () => {
     }
   ];
 
-  const navigate = useNavigate();
-
   const [showForm, setShowForm] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState(null);
   const [restaurants, setRestaurants] = useState(initialRestaurants);
-  const [restaurentId, setRestaurantId] = useState('')
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -74,22 +72,29 @@ const RestaurantManagement = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this restaurant?')) {
-      setRestaurants(prev => prev.filter(restaurant => restaurant.id !== id));
+  const handleDeleteClick = (restaurant) => {
+    setRestaurantToDelete(restaurant);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (restaurantToDelete) {
+      setRestaurants(prev => 
+        prev.filter(restaurant => restaurant.id !== restaurantToDelete.id)
+      );
+      setShowDeleteModal(false);
+      setRestaurantToDelete(null);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingId) {
-      // Update existing restaurant
       setRestaurants(prev => prev.map(restaurant => 
         restaurant.id === editingId ? { ...formData, id: editingId } : restaurant
       ));
       setEditingId(null);
     } else {
-      // Create new restaurant
       const newRestaurant = {
         id: Date.now(),
         ...formData
@@ -97,7 +102,6 @@ const RestaurantManagement = () => {
       setRestaurants(prev => [newRestaurant, ...prev]);
     }
 
-    // Reset form
     setFormData({
       name: '',
       contactPerson: '',
@@ -112,14 +116,37 @@ const RestaurantManagement = () => {
     setShowForm(false);
   };
 
-  const handleRestaurantClick = (restaurantId) => {
-    setRestaurantId(restaurantId);
-    navigate('/menu/' + restaurantId);
-  }
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full">
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Confirm Delete</h3>
+        <p className="text-gray-600 mb-6">
+          Are you sure you want to delete `${restaurantToDelete?.name}`? 
+          This action cannot be undone.
+        </p>
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={() => {
+              setShowDeleteModal(false);
+              setRestaurantToDelete(null);
+            }}
+            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Delete Restaurant
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      {/* Header */}
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Restaurant Management</h1>
@@ -146,203 +173,23 @@ const RestaurantManagement = () => {
           </button>
         </div>
 
-        {/* Restaurant Creation/Edit Form Modal */}
-        {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {editingId ? 'Edit Restaurant' : 'Add New Restaurant'}
-                </h2>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Form fields remain the same */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Restaurant Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Person
-                    </label>
-                    <input
-                      type="text"
-                      name="contactPerson"
-                      value={formData.contactPerson}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Opening Time
-                    </label>
-                    <input
-                      type="time"
-                      name="openTime"
-                      value={formData.openTime}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Closing Time
-                    </label>
-                    <input
-                      type="time"
-                      name="closeTime"
-                      value={formData.closeTime}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cuisine Type
-                    </label>
-                    <input
-                      type="text"
-                      name="cuisine"
-                      value={formData.cuisine}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address
-                    </label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      rows="2"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      rows="3"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
-                  >
-                    {editingId ? 'Update Restaurant' : 'Create Restaurant'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Restaurant List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map(restaurant => (
             <div
               key={restaurant.id}
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-              onClick={() => handleRestaurantClick(restaurant.id)}
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold text-gray-800">{restaurant.name}</h3>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleRestaurantClick(restaurant.id)}
+                    onClick={() => handleEdit(restaurant)}
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <Edit size={18} />
                   </button>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation(); 
-                      handleEdit(restaurant);
-                    }}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(restaurant.id);
-                    }}
+                    onClick={() => handleDeleteClick(restaurant)}
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 size={18} />
@@ -379,9 +226,133 @@ const RestaurantManagement = () => {
             </div>
           ))}
         </div>
+
+        {showForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{editingId ? 'Edit Restaurant' : 'Add Restaurant'}</h3>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Contact Person</label>
+                  <input
+                    type="text"
+                    name="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Open Time</label>
+                  <input
+                    type="time"
+                    name="openTime"
+                    value={formData.openTime}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Close Time</label>
+                  <input
+                    type="time"
+                    name="closeTime"
+                    value={formData.closeTime}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Cuisine</label>
+                  <input
+                    type="text"
+                    name="cuisine"
+                    value={formData.cuisine}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setShowForm(false)}
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                  >
+                    {editingId ? 'Update Restaurant' : 'Add Restaurant'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showDeleteModal && <DeleteConfirmationModal />}
       </div>
     </div>
   );
 };
 
-export default RestaurantManagement;
+export default Restaurant;
