@@ -8,19 +8,7 @@ pipeline {
 
     stages {
 
-           stage('Terraform Init & Apply')  
-            steps {
-                script {
-                    sh '''
-                        terraform init
-                        terraform fmt
-                        terraform validate
-                        terraform plan
-                        terraform apply -auto-approve
-                    '''
-                }
-            }
-        }
+          
 
             // stage('Ansible Configuration') {
             //     steps {
