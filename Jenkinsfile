@@ -6,8 +6,31 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
-
     stages {
+
+           stage('Terraform Init & Apply') {
+            steps {
+                script {
+                    sh '''
+                        terraform init
+                        Terrafrom fmt
+                        Terraform validate
+                        Terraform plan
+                        terraform apply -auto-approve
+                    '''
+                }
+                }
+            }
+
+            // stage('Ansible Configuration') {
+            //     steps {
+            //         script {
+            //             sh '''
+            //                 ansible-playbook -i inventory ansible_setup.yml
+            //             '''
+            //         }
+            //     }
+            // }
 
            stage('Build') {
 
