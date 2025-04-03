@@ -9,11 +9,7 @@ pipeline {
     stages {
 
            stage('Terraform Init & Apply') {
-            agent {
-                 docker {
-                image 'hashicorp/terraform'
-                
-        }
+            
             } 
             steps {
                 script {
