@@ -10,11 +10,12 @@ pipeline {
 
            stage('Terraform Init & Apply') {
             agent {
-                docker {
-                    image 'hashicorp/terraform:1.6.0'  // Use Terraform Docker image
-                    args '-v $WORKSPACE:/workspace -w /workspace' // Mount workspace
-                }
+                 docker {
+                    image 'hashicorp/terraform:1.6.0'
+                    args '-v $WORKSPACE:/workspace -w /workspace --dns 8.8.8.8'
             }
+            
+            } 
             steps {
                 script {
                     sh '''
