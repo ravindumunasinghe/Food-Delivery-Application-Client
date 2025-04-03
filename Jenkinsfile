@@ -9,18 +9,24 @@ pipeline {
     stages {
 
            stage('Terraform Init & Apply') {
+            agent {
+                docker {
+                    image 'hashicorp/terraform:1.6.0'  // Use Terraform Docker image
+                    args '-v $WORKSPACE:/workspace -w /workspace' // Mount workspace
+                }
+            }
             steps {
                 script {
                     sh '''
                         terraform init
-                        Terrafrom fmt
-                        Terraform validate
-                        Terraform plan
+                        terraform fmt
+                        terraform validate
+                        terraform plan
                         terraform apply -auto-approve
                     '''
                 }
-                }
             }
+        }
 
             // stage('Ansible Configuration') {
             //     steps {
