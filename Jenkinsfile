@@ -8,9 +8,7 @@ pipeline {
 
     stages {
 
-           stage('Terraform Init & Apply') {
-            
-            } 
+           stage('Terraform Init & Apply')  
             steps {
                 script {
                     sh '''
