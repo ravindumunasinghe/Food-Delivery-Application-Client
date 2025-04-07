@@ -4,7 +4,7 @@ provider "aws" {
 
 
 resource "aws_instance" "food" {
-  ami           = "ami-09a9858973b288bdd" 
+  ami           = "ami-0c1ac8a41498c1a9c" 
   instance_type = "t3.micro"
   key_name      = "key1"
   associate_public_ip_address = true
