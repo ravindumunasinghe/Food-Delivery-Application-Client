@@ -6,7 +6,7 @@ provider "aws" {
 resource "aws_instance" "food" {
   ami           = "ami-0c1ac8a41498c1a9c" 
   instance_type = "t3.micro"
-  key_name      = "key1"
+  key_name      = "new"
   associate_public_ip_address = true
 
   vpc_security_group_ids = [aws_security_group.food_sg.id]
