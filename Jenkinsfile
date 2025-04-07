@@ -45,13 +45,9 @@ pipeline {
             echo "EC2 Public IP: ${env.EC2_IP}"
 
             // Write inventory file for Ansible
-            writeFile file: 'inventory.ini', text: "[ec2]\n${env.EC2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=C:/path/to/key1.pem"
+            writeFile file: 'inventory.ini', text: "[ec2]\n${env.EC2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=C:\\Users\\ravindu dilshan\\Downloads\\dockerthings2\\key1.pem"
                 }
             }
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 081d2041541aed7661777dc0c8dbde7250685fa7
